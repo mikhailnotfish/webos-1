@@ -1,5 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  // =========================
+  // WINDOW LAYERING
+  // =========================
+
   let highestZ = 100;
 
   function bringToFront(element) {
@@ -7,78 +11,97 @@ document.addEventListener("DOMContentLoaded", () => {
     element.style.zIndex = highestZ;
   }
 
+  // =========================
+  // CLOCK
+  // =========================
+
   function updateTime() {
-    const timeElement = document.getElementById("timeElement");
+    const timeElement =
+      document.getElementById("timeElement");
 
     if (timeElement) {
-      timeElement.textContent = new Date().toLocaleString();
+      timeElement.textContent =
+        new Date().toLocaleString();
     }
   }
 
   updateTime();
   setInterval(updateTime, 1000);
 
+  // =========================
+  // DRAGGING
+  // =========================
+
   function dragElement(element) {
 
     if (!element) return;
 
-    const header = element.querySelector(".windowheader");
+    const header =
+      element.querySelector(".windowheader");
 
     if (!header) return;
 
-    let startX = 0;
-    let startY = 0;
-    let dragX = 0;
-    let dragY = 0;
+    let pos1 = 0;
+    let pos2 = 0;
+    let pos3 = 0;
+    let pos4 = 0;
 
-    header.addEventListener("mousedown", dragStart);
+    header.addEventListener("mousedown", dragMouseDown);
 
-    function dragStart(e) {
+    function dragMouseDown(e) {
+
+      e.preventDefault();
 
       bringToFront(element);
 
-      dragX = e.clientX;
-      dragY = e.clientY;
-
-      document.addEventListener(
-        "mousemove",
-        dragMove
-      );
+      pos3 = e.clientX;
+      pos4 = e.clientY;
 
       document.addEventListener(
         "mouseup",
-        dragEnd
+        closeDragElement
+      );
+
+      document.addEventListener(
+        "mousemove",
+        elementDrag
       );
     }
 
-    function dragMove(e) {
+    function elementDrag(e) {
 
-      startX = dragX - e.clientX;
-      startY = dragY - e.clientY;
+      e.preventDefault();
 
-      dragX = e.clientX;
-      dragY = e.clientY;
+      pos1 = pos3 - e.clientX;
+      pos2 = pos4 - e.clientY;
+
+      pos3 = e.clientX;
+      pos4 = e.clientY;
 
       element.style.top =
-        (element.offsetTop - startY) + "px";
+        (element.offsetTop - pos2) + "px";
 
       element.style.left =
-        (element.offsetLeft - startX) + "px";
+        (element.offsetLeft - pos1) + "px";
     }
 
-    function dragEnd() {
-
-      document.removeEventListener(
-        "mousemove",
-        dragMove
-      );
+    function closeDragElement() {
 
       document.removeEventListener(
         "mouseup",
-        dragEnd
+        closeDragElement
+      );
+
+      document.removeEventListener(
+        "mousemove",
+        elementDrag
       );
     }
   }
+
+  // =========================
+  // WINDOW MANAGEMENT
+  // =========================
 
   function createWindowOpenListener(
     iconId,
@@ -121,18 +144,62 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // =========================
+  // FISH DATABASE
+  // =========================
+
   const fishData = [
+
     {
       name: "Pleco",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbawIA7Jiy8FFaFJhFTxXSEOywk0SNGfNW6A&s"
+      image: "images/placofish.png"
     },
+
     {
       name: "Angelfish",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuon2x9QHOBLBRjw6_KJlhlhhGKmtXIwrI2g&s"
+      image: "images/angelfish.png"
+    },
+
+    {
+      name: "Clownfish",
+      image: "images/clownfish.png"
+    },
+
+    {
+      name: "Betta",
+      image: "images/bettafish.png"
+    },
+
+    {
+      name: "Goldfish",
+      image: "images/goldfish.png"
+    },
+
+    {
+      name: "Discus",
+      image: "images/discusfish.png"
+    },
+
+    {
+      name: "Neon Tetra",
+      image: "images/tetrafish.png"
+    },
+
+    {
+      name: "Guppy",
+      image: "images/guppyfish.png"
+    },
+
+    {
+      name: "Zebrafish",
+      image: "images/zebrafish.png"
     }
+
   ];
+
+  // =========================
+  // FISHFINDER
+  // =========================
 
   function initFishfinder() {
 
@@ -154,13 +221,65 @@ document.addEventListener("DOMContentLoaded", () => {
 
       card.innerHTML = `
         <h3>${fish.name}</h3>
-        <img src="${fish.image}" alt="${fish.name}">
+        <img
+          src="${fish.image}"
+          alt="${fish.name}"
+          style="width:100%;margin-bottom:20px;"
+        >
       `;
 
       content.appendChild(card);
 
     });
   }
+
+  // =========================
+  // FISHPAD
+  // =========================
+
+  const notepadText =
+    document.getElementById(
+      "notepadText"
+    );
+
+  const saveButton =
+    document.getElementById(
+      "saveNoteButton"
+    );
+
+  if (notepadText) {
+
+    const savedNote =
+      localStorage.getItem(
+        "fishos-note"
+      );
+
+    if (savedNote) {
+      notepadText.value = savedNote;
+    }
+  }
+
+  if (saveButton) {
+
+    saveButton.addEventListener(
+      "click",
+      () => {
+
+        localStorage.setItem(
+          "fishos-note",
+          notepadText.value
+        );
+
+        alert(
+          "FishPad note saved!"
+        );
+      }
+    );
+  }
+
+  // =========================
+  // APP SETUP
+  // =========================
 
   createWindowOpenListener(
     "welcomeIcon",
@@ -170,6 +289,11 @@ document.addEventListener("DOMContentLoaded", () => {
   createWindowOpenListener(
     "fishfinderIcon",
     "fishfinder"
+  );
+
+  createWindowOpenListener(
+    "notepadIcon",
+    "notepad"
   );
 
   createWindowCloseListener(
@@ -182,6 +306,11 @@ document.addEventListener("DOMContentLoaded", () => {
     "fishfinderclose"
   );
 
+  createWindowCloseListener(
+    "notepad",
+    "notepadclose"
+  );
+
   dragElement(
     document.getElementById("welcome")
   );
@@ -190,16 +319,24 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("fishfinder")
   );
 
+  dragElement(
+    document.getElementById("notepad")
+  );
+
   document
     .querySelectorAll(".window")
-    .forEach(windowEl => {
+    .forEach(win => {
 
-      windowEl.addEventListener(
+      win.addEventListener(
         "mousedown",
-        () => bringToFront(windowEl)
+        () => bringToFront(win)
       );
 
     });
+
+  // =========================
+  // START APPS
+  // =========================
 
   initFishfinder();
 
