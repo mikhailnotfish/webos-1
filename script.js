@@ -1,8 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  // =========================
-  // WINDOW LAYERING
-  // =========================
 
   let highestZ = 100;
 
@@ -11,9 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     element.style.zIndex = highestZ;
   }
 
-  // =========================
-  // CLOCK
-  // =========================
+
 
   function updateTime() {
     const timeElement =
@@ -28,9 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
   updateTime();
   setInterval(updateTime, 1000);
 
-  // =========================
-  // DRAGGING
-  // =========================
+
 
   function dragElement(element) {
 
@@ -99,9 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // =========================
-  // WINDOW MANAGEMENT
-  // =========================
+
 
   function createWindowOpenListener(
     iconId,
@@ -146,9 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // =========================
-  // FISH DATABASE
-  // =========================
+ 
 
   const fishData = [
 
@@ -199,9 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   ];
 
-  // =========================
-  // FISHFINDER
-  // =========================
+
 
   function initFishfinder() {
 
@@ -235,9 +222,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // =========================
-  // FISHPAD
-  // =========================
 
   const notepadText =
     document.getElementById(
@@ -279,9 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  // =========================
-  // APP SETUP
-  // =========================
+
 
   createWindowOpenListener(
     "welcomeIcon",
@@ -353,9 +335,7 @@ dragElement(
 
     });
 
-  // =========================
-  // START APPS
-  // =========================
+
 
   initFishfinder();
 
