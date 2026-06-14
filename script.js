@@ -129,6 +129,8 @@ document.addEventListener("DOMContentLoaded", () => {
     buttonId
   ) {
 
+   
+
     const win =
       document.getElementById(windowId);
 
@@ -311,6 +313,21 @@ document.addEventListener("DOMContentLoaded", () => {
     "notepadclose"
   );
 
+  createWindowCloseListener(
+  "fishtunes",
+  "fishtunesclose"
+);
+
+  createWindowOpenListener(
+  "notepadIcon",
+  "notepad"
+);
+
+createWindowOpenListener(
+  "fishtunesIcon",
+  "fishtunes"
+);
+
   dragElement(
     document.getElementById("welcome")
   );
@@ -322,7 +339,9 @@ document.addEventListener("DOMContentLoaded", () => {
   dragElement(
     document.getElementById("notepad")
   );
-
+dragElement(
+  document.getElementById("fishtunes")
+);
   document
     .querySelectorAll(".window")
     .forEach(win => {
