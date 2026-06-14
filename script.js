@@ -1,98 +1,209 @@
-// ==================== CLOCK ====================
-function updateTime() {
-  const timeElement = document.getElementById("timeElement");
-  if (timeElement) {
-    timeElement.textContent = new Date().toLocaleString();
-  }
-}
+document.addEventListener("DOMContentLoaded", () => {
 
-updateTime();
-setInterval(updateTime, 1000);
+  let highestZ = 100;
 
-// ==================== WINDOW DRAGGING ====================
-function dragElement(element) {
-  let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-  const header = element.querySelector(".windowheader");
-
-  if (header) {
-    header.onmousedown = dragMouseDown;
+  function bringToFront(element) {
+    highestZ++;
+    element.style.zIndex = highestZ;
   }
 
-  function dragMouseDown(e) {
-    e.preventDefault();
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    document.onmouseup = closeDragElement;
-    document.onmousemove = elementDrag;
+  function updateTime() {
+    const timeElement = document.getElementById("timeElement");
+
+    if (timeElement) {
+      timeElement.textContent = new Date().toLocaleString();
+    }
   }
 
-  function elementDrag(e) {
-    e.preventDefault();
-    pos1 = pos3 - e.clientX;
-    pos2 = pos4 - e.clientY;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    element.style.top = (element.offsetTop - pos2) + "px";
-    element.style.left = (element.offsetLeft - pos1) + "px";
+  updateTime();
+  setInterval(updateTime, 1000);
+
+  function dragElement(element) {
+
+    if (!element) return;
+
+    const header = element.querySelector(".windowheader");
+
+    if (!header) return;
+
+    let startX = 0;
+    let startY = 0;
+    let dragX = 0;
+    let dragY = 0;
+
+    header.addEventListener("mousedown", dragStart);
+
+    function dragStart(e) {
+
+      bringToFront(element);
+
+      dragX = e.clientX;
+      dragY = e.clientY;
+
+      document.addEventListener(
+        "mousemove",
+        dragMove
+      );
+
+      document.addEventListener(
+        "mouseup",
+        dragEnd
+      );
+    }
+
+    function dragMove(e) {
+
+      startX = dragX - e.clientX;
+      startY = dragY - e.clientY;
+
+      dragX = e.clientX;
+      dragY = e.clientY;
+
+      element.style.top =
+        (element.offsetTop - startY) + "px";
+
+      element.style.left =
+        (element.offsetLeft - startX) + "px";
+    }
+
+    function dragEnd() {
+
+      document.removeEventListener(
+        "mousemove",
+        dragMove
+      );
+
+      document.removeEventListener(
+        "mouseup",
+        dragEnd
+      );
+    }
   }
 
-  function closeDragElement() {
-    document.onmouseup = null;
-    document.onmousemove = null;
+  function createWindowOpenListener(
+    iconId,
+    windowId
+  ) {
+
+    const icon =
+      document.getElementById(iconId);
+
+    const win =
+      document.getElementById(windowId);
+
+    if (!icon || !win) return;
+
+    icon.addEventListener("dblclick", () => {
+
+      win.style.display = "flex";
+      bringToFront(win);
+
+    });
   }
-}
 
-// ==================== WINDOW MANAGEMENT ====================
-function createWindowCloseListener(windowId, closeButtonId) {
-  document.getElementById(closeButtonId).addEventListener("click", () => {
-    document.getElementById(windowId).style.display = "none";
-  });
-}
+  function createWindowCloseListener(
+    windowId,
+    buttonId
+  ) {
 
-function createWindowOpenListener(iconId, windowId) {
-  document.getElementById(iconId).addEventListener("dblclick", () => {
-    document.getElementById(windowId).style.display = "flex";
-  });
-}
+    const win =
+      document.getElementById(windowId);
 
-// Welcome window
-createWindowOpenListener("welcomeIcon", "welcome");
-createWindowCloseListener("welcome", "welcomeclose");
-dragElement(document.querySelector("#welcome"));
+    const button =
+      document.getElementById(buttonId);
 
-// ==================== FISHFINDER APP ====================
-const fishData = [
-  { name: "Pleco", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbawIA7Jiy8FFaFJhFTxXSEOywk0SNGfNW6A&s" },
-  { name: "Angelfish", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuon2x9QHOBLBRjw6_KJlhlhhGKmtXIwrI2g&s" }
-];
+    if (!win || !button) return;
 
-function initFishfinder() {
-  const content = document.getElementById("fishfinderContent");
-  
-  fishData.forEach(fish => {
-    const fishDiv = document.createElement("div");
-    fishDiv.style.marginBottom = "20px";
-    
-    const title = document.createElement("h3");
-    title.textContent = fish.name;
-    title.style.color = "white";
-    title.style.margin = "0";
-    
-    const img = document.createElement("img");
-    img.src = fish.image;
-    img.style.width = "100%";
-    img.style.borderRadius = "4px";
-    
-    fishDiv.appendChild(title);
-    fishDiv.appendChild(img);
-    content.appendChild(fishDiv);
-  });
-}
+    button.addEventListener("click", () => {
 
-initFishfinder();
-createWindowOpenListener("fishfinderIcon", "fishfinder");
-createWindowCloseListener("fishfinder", "fishfinderclose");
-dragElement(document.querySelector("#fishfinder"));
+      win.style.display = "none";
+
+    });
+  }
+
+  const fishData = [
+    {
+      name: "Pleco",
+      image:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbawIA7Jiy8FFaFJhFTxXSEOywk0SNGfNW6A&s"
+    },
+    {
+      name: "Angelfish",
+      image:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuon2x9QHOBLBRjw6_KJlhlhhGKmtXIwrI2g&s"
+    }
+  ];
+
+  function initFishfinder() {
+
+    const content =
+      document.getElementById(
+        "fishfinderContent"
+      );
+
+    if (!content) return;
+
+    content.innerHTML = "";
+
+    fishData.forEach(fish => {
+
+      const card =
+        document.createElement("div");
+
+      card.className = "fish-card";
+
+      card.innerHTML = `
+        <h3>${fish.name}</h3>
+        <img src="${fish.image}" alt="${fish.name}">
+      `;
+
+      content.appendChild(card);
+
+    });
+  }
+
+  createWindowOpenListener(
+    "welcomeIcon",
+    "welcome"
+  );
+
+  createWindowOpenListener(
+    "fishfinderIcon",
+    "fishfinder"
+  );
+
+  createWindowCloseListener(
+    "welcome",
+    "welcomeclose"
+  );
+
+  createWindowCloseListener(
+    "fishfinder",
+    "fishfinderclose"
+  );
+
+  dragElement(
+    document.getElementById("welcome")
+  );
+
+  dragElement(
+    document.getElementById("fishfinder")
+  );
+
+  document
+    .querySelectorAll(".window")
+    .forEach(windowEl => {
+
+      windowEl.addEventListener(
+        "mousedown",
+        () => bringToFront(windowEl)
+      );
+
+    });
+
+  initFishfinder();
+
+});
 
 
 

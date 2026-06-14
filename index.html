@@ -1,203 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FishOS</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FishOS</title>
 
-    body {
-      font-family: Helvetica, Noto Sans, sans-serif;
-      height: 100vh;
-      overflow: hidden;
-      background-color: #000;
-    }
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    .background {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url('https://upload.wikimedia.org/wikipedia/en/2/27/Bliss_%28Windows_XP%29.png');
-      background-size: cover;
-      background-position: center;
-      z-index: 1;
-    }
+body {
+  font-family: Helvetica, Arial, sans-serif;
+  height: 100vh;
+  overflow: hidden;
+}
 
-    .content {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      height: 100%;
-      padding: 20px;
-    }
+.background {
+  position: fixed;
+  inset: 0;
+  background-image: url("https://upload.wikimedia.org/wikipedia/en/2/27/Bliss_%28Windows_XP%29.png");
+  background-size: cover;
+  background-position: center;
+}
 
-    .taskbar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 50px;
-      backdrop-filter: blur(10px);
-      background-color: rgba(0, 0, 0, 0.25);
-      z-index: 3;
-      display: flex;
-      align-items: center;
-      padding: 0 10px;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      gap: 10px;
-    }
+.content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
 
-    .taskbar-label {
-      color: white;
-      font-size: 12px;
-      margin-right: auto;
-    }
+#desktopApps {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
-    .time {
-      color: white;
-      font-size: 14px;
-    }
+.desktop-icon {
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
 
-    .window {
-      border: solid 2px #999;
-      display: none;
-      flex-direction: column;
-      border-radius: 8px;
-      position: absolute;
-      backdrop-filter: blur(4px);
-      background-color: rgba(0, 0, 0, 0.25);
-      width: 400px;
-      height: 300px;
-      padding: 8px;
-      z-index: 10;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
+.desktop-icon-image {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
 
-    .windowheader {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      cursor: grab;
-      justify-content: space-between;
-      padding: 8px;
-      background-color: rgba(0, 0, 0, 0.2);
-      border-radius: 4px;
-      margin-bottom: 8px;
-      color: #fff;
-      font-weight: bold;
-      user-select: none;
-    }
+.desktop-icon-label {
+  color: white;
+  text-align: center;
+  font-size: 12px;
+  text-shadow: 1px 1px 3px black;
+}
 
-    .windowcontent {
-      flex: 1;
-      overflow: auto;
-      color: #fff;
-      padding: 10px;
-    }
+.window {
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  width: 400px;
+  height: 300px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(20,20,20,.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.2);
+  box-shadow: 0 8px 20px rgba(0,0,0,.5);
+}
 
-    .windowclose {
-      width: 24px;
-      height: 24px;
-      background-color: #ff4444;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      color: white;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background-color 0.2s;
-    }
+.windowheader {
+  height: 40px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+  cursor: move;
+  background: rgba(0,0,0,.3);
+}
 
-    .windowclose:hover {
-      background-color: #ff6666;
-    }
+.windowcontent {
+  flex: 1;
+  overflow: auto;
+  color: white;
+  padding: 10px;
+}
 
-    .desktop-icon {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      width: 80px;
-      user-select: none;
-      margin-bottom: 20px;
-    }
+.windowclose {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #e53935;
+  color: white;
+  font-size: 18px;
+}
 
-    .desktop-icon-image {
-      width: 48px;
-      height: 48px;
-      object-fit: contain;
-    }
+.windowclose:hover {
+  opacity: .9;
+}
 
-    .desktop-icon-label {
-      color: white;
-      font-size: 12px;
-      text-align: center;
-      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    }
+.taskbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  background: rgba(0,0,0,.3);
+  backdrop-filter: blur(10px);
+  color: white;
+  z-index: 9999;
+}
 
-    #desktopApps {
-      padding-top: 64px;
-      padding-left: 16px;
-    }
-  </style>
+.taskbar-label {
+  margin-right: auto;
+}
+
+.time {
+  font-size: 14px;
+}
+
+.fish-card {
+  margin-bottom: 20px;
+}
+
+.fish-card img {
+  width: 100%;
+  border-radius: 6px;
+  margin-top: 5px;
+}
+</style>
 </head>
+
 <body>
-  <div class="background"></div>
-  
-  <div class="content">
-    <div id="desktopApps">
-      <!-- Welcome File Icon -->
-      <div class="desktop-icon" id="welcomeIcon">
-        <img src="data:image/svg+xml,%3Csvg xmlns='https://img.magnific.com/free-vector/yellow-folder-flat-style_78370-6671.jpg?semt=ais_hybrid&w=740&q=80">
-        <span class="desktop-icon-label">welcome.txt</span>
-      </div>
 
-      <!-- Fishfinder App Icon -->
-      <div class="desktop-icon" id="fishfinderIcon">
-        <img src="https://img.magnific.com/free-vector/yellow-folder-flat-style_78370-6671.jpg?semt=ais_hybrid&w=740&q=80">
-        <span class="desktop-icon-label">fishfinder.exe</span>
-      </div>
-    </div>
+<div class="background"></div>
 
-    <!-- Welcome Window -->
-    <div id="welcome" class="window" style="top: 50px; left: 50px;">
-      <div id="welcomeheader" class="windowheader">
+<div class="content">
+
+  <div id="desktopApps">
+
+    <div class="desktop-icon" id="welcomeIcon">
+      <img
+        class="desktop-icon-image"
+        src="https://cdn-icons-png.flaticon.com/512/716/716784.png"
+        alt="Folder"
+      >
+      <span class="desktop-icon-label">
         welcome.txt
-        <button id="welcomeclose" class="windowclose">×</button>
-      </div>
-      <div class="windowcontent">
-        <p>Welcome to FishOS!</p>
-      </div>
+      </span>
     </div>
 
-    <!-- Fishfinder Window -->
-    <div id="fishfinder" class="window" style="top: 150px; left: 150px; width: 500px; height: 400px;">
-      <div id="fishfinderheader" class="windowheader">
-        Fishfinder
-        <button id="fishfinderclose" class="windowclose">×</button>
-      </div>
-      <div class="windowcontent" id="fishfinderContent">
-        <!-- Fish will be added here by JavaScript -->
-      </div>
+    <div class="desktop-icon" id="fishfinderIcon">
+      <img
+        class="desktop-icon-image"
+        src="https://cdn-icons-png.flaticon.com/512/716/716784.png"
+        alt="Folder"
+      >
+      <span class="desktop-icon-label">
+        fishfinder.exe
+      </span>
+    </div>
+
+  </div>
+
+  <div
+    id="welcome"
+    class="window"
+    style="top:60px;left:120px;"
+  >
+    <div class="windowheader">
+      <span>welcome.txt</span>
+      <button
+        id="welcomeclose"
+        class="windowclose"
+      >
+        ×
+      </button>
+    </div>
+
+    <div class="windowcontent">
+      <h2>Welcome to FishOS</h2>
+      <p>Your aquatic desktop environment.</p>
     </div>
   </div>
 
-  <div class="taskbar">
-    <span class="taskbar-label">FishOS</span>
-    <span class="time" id="timeElement"></span>
+  <div
+    id="fishfinder"
+    class="window"
+    style="top:120px;left:220px;width:500px;height:400px;"
+  >
+    <div class="windowheader">
+      <span>Fishfinder</span>
+      <button
+        id="fishfinderclose"
+        class="windowclose"
+      >
+        ×
+      </button>
+    </div>
+
+    <div
+      id="fishfinderContent"
+      class="windowcontent"
+    >
+    </div>
   </div>
 
-  <script src="script.js"></script>
+</div>
+
+<div class="taskbar">
+  <span class="taskbar-label">FishOS</span>
+  <span id="timeElement" class="time"></span>
+</div>
+
+<script src="script.js"></script>
+
 </body>
 </html>
 
